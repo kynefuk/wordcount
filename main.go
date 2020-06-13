@@ -3,8 +3,15 @@
 //同じ単語数の単語がある場合はアルファベット順に出力する。
 package main
 
-import "fmt"
+import (
+	"os"
+)
 
 func main() {
-	fmt.Println("hoge")
+	os.Exit(Run(os.Args))
+}
+
+func Run(args []string) int {
+	//処理
+	return 0
 }
