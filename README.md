@@ -13,3 +13,10 @@ go
 dog
 fish
 ```
+
+```
+$ echo "dog dog dog. cat. fish fish. go go go go." | wordcount
+go
+dog
+fish
+```
