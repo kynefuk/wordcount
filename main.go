@@ -5,27 +5,31 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
 	cli := &CLI{outStream: os.Stdout, errStream: os.Stderr}
-	if len(os.Args) > 1 {
-		input, err := extractInput(os.Args)
+	if terminal.IsTerminal(0) {
+		input, err := extractInputSentence(os.Args)
+		log.Printf("error: %T", err)
 		if err != nil {
-			os.Exit(1)
+			os.Exit(ExitCodeError)
 		}
 		os.Exit(cli.Run(input))
+
+	} else {
+		body, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			os.Exit(ExitCodeError)
+		}
+		os.Exit(cli.Run(string(body)))
 	}
-	body, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		os.Exit(1)
-	}
-	os.Exit(cli.Run(string(body)))
 }
 
-func extractInput(args []string) (string, error) {
+func extractInputSentence(args []string) (string, error) {
 	if len(args) != 2 {
-		log.Printf("argument must be only single sentence. Your specified %d arguments", len(args)-1)
 		return "", fmt.Errorf("argument must be only single sentence. Your specified %d arguments", len(args)-1)
 	}
 	input := os.Args[1]

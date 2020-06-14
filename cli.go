@@ -1,7 +1,3 @@
-//標準入力から英語の文章を受け取り単語の数を数え、多い順TOP3を改行して出力するプログラムを作る
-//単語の区切りはスペースまたは改行とする。なお連続するスペースや改行、文末のドットやカンマは無視する。
-//同じ単語数の単語がある場合はアルファベット順に出力する。
-
 package main
 
 import (
@@ -12,20 +8,28 @@ import (
 	"strings"
 )
 
-// Delimiter is newline character or space
+// Exit codes represent an exit code
+const (
+	ExitCodeOK = iota
+	ExitCodeError
+)
+
+// OutPutCount is number of output words
+const OutPutCount = 3
+
+// delimiter is newline character or space
 var delimiter = regexp.MustCompile(`[\r\n ]+`)
 
-const OUTPUT_COUNT = 3
+// Set is a pseudo set
+type Set map[string]struct{}
 
+// CLI is a command line object
 type CLI struct {
 	outStream, errStream io.Writer
 }
 
-func (cli *CLI) Run(arg string) int {
-	inputSentence := arg
-	splited := delimiter.Split(inputSentence, -1)
-
-	set := make(map[string]struct{})
+func createSet(splited []string) Set {
+	set := Set{}
 	for _, v := range splited {
 		word := strings.Trim(v, ",.")
 
@@ -34,6 +38,26 @@ func (cli *CLI) Run(arg string) int {
 		}
 		set[word] = struct{}{}
 	}
+	return set
+}
+
+func outputTop3Word(ranking Ranking) {
+	var outputCount = 1
+	for _, rank := range ranking {
+		if outputCount > OutPutCount {
+			break
+		}
+		fmt.Println(rank.name)
+		outputCount++
+	}
+}
+
+// Run is a main process of cli
+func (cli *CLI) Run(arg string) int {
+	inputSentence := arg
+	splited := delimiter.Split(inputSentence, -1)
+
+	set := createSet(splited)
 
 	var ranking Ranking
 	for key := range set {
@@ -45,13 +69,6 @@ func (cli *CLI) Run(arg string) int {
 	sort.Slice(ranking, ranking.LessByName)
 	sort.Sort(sort.Reverse(ranking))
 
-	var outputCount = 1
-	for _, rank := range ranking {
-		if outputCount > OUTPUT_COUNT {
-			break
-		}
-		fmt.Println(rank.name)
-		outputCount++
-	}
-	return 0
+	outputTop3Word(ranking)
+	return ExitCodeOK
 }
