@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	os.Exit(Run(os.Args))
+	cli := &CLI{outStream: os.Stdout, errStream: os.Stderr}
+	os.Exit(cli.Run(os.Args))
 }
 
 func Run(args []string) int {
