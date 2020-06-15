@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"golang.org/x/crypto/ssh/terminal"
@@ -12,26 +11,15 @@ import (
 func main() {
 	cli := &CLI{outStream: os.Stdout, errStream: os.Stderr}
 	if terminal.IsTerminal(0) {
-		input, err := extractInputSentence(os.Args)
-		log.Printf("error: %T", err)
-		if err != nil {
-			os.Exit(ExitCodeError)
-		}
-		os.Exit(cli.Run(input))
-
+		flag.Parse()
+		args := flag.Args()
+		os.Exit(cli.Run(args))
 	} else {
 		body, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
 			os.Exit(ExitCodeError)
 		}
-		os.Exit(cli.Run(string(body)))
+		args := []string{string(body)}
+		os.Exit(cli.Run(args))
 	}
-}
-
-func extractInputSentence(args []string) (string, error) {
-	if len(args) != 2 {
-		return "", fmt.Errorf("argument must be only single sentence. Your specified %d arguments", len(args)-1)
-	}
-	input := os.Args[1]
-	return input, nil
 }

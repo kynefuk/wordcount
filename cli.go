@@ -41,20 +41,33 @@ func createSet(splited []string) Set {
 	return set
 }
 
-func outputTop3Word(ranking Ranking) {
+func outputTop3Word(outStream io.Writer, ranking Ranking) {
 	var outputCount = 1
 	for _, rank := range ranking {
 		if outputCount > OutPutCount {
 			break
 		}
-		fmt.Println(rank.name)
+		fmt.Fprintln(outStream, rank.name)
 		outputCount++
 	}
 }
 
+func extractInputSentence(args []string) (string, error) {
+	argsNum := len(args)
+	if len(args) != 1 {
+		return "", fmt.Errorf("arguments must be single sentence. Your specified %d arguments", argsNum)
+	}
+	input := args[0]
+	return input, nil
+}
+
 // Run is a main process of cli
-func (cli *CLI) Run(arg string) int {
-	inputSentence := arg
+func (cli *CLI) Run(args []string) int {
+	inputSentence, err := extractInputSentence(args)
+	if err != nil {
+		fmt.Fprintf(cli.errStream, "error occured: %s\n", err)
+		return ExitCodeError
+	}
 	splited := delimiter.Split(inputSentence, -1)
 
 	set := createSet(splited)
@@ -69,6 +82,6 @@ func (cli *CLI) Run(arg string) int {
 	sort.Slice(ranking, ranking.LessByName)
 	sort.Sort(sort.Reverse(ranking))
 
-	outputTop3Word(ranking)
+	outputTop3Word(cli.outStream, ranking)
 	return ExitCodeOK
 }
