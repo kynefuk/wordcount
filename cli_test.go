@@ -7,8 +7,7 @@ import (
 )
 
 func TestCliRun(t *testing.T) {
-	outStream := new(bytes.Buffer)
-	errStream := new(bytes.Buffer)
+	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
 	cases := []struct {
 		name     string
