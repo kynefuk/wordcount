@@ -1,13 +1,13 @@
 package main
 
-// Rank is an object that represents a rank of word.
-type Rank struct {
+// Word is an object that has word name and word count.
+type Word struct {
 	name  string
 	count int
 }
 
 // Ranking is an array of Rank that represents a ranking of words.
-type Ranking []Rank
+type Ranking []Word
 
 func (r Ranking) Len() int { return len(r) }
 
