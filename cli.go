@@ -76,7 +76,7 @@ func (cli *CLI) Run(args []string) int {
 	var ranking Ranking
 	for key := range set {
 		count := strings.Count(inputSentence, key)
-		rank := Rank{name: key, count: count}
+		rank := Word{name: key, count: count}
 		ranking = append(ranking, rank)
 	}
 
