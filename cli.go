@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Exit codes represent an exit code
+// Exit codes represent an exit status code
 const (
 	ExitCodeOK = iota
 	ExitCodeError
@@ -17,10 +17,10 @@ const (
 // OutPutCount is number of output words
 const OutPutCount = 3
 
-// delimiter is newline character or space
-var delimiter = regexp.MustCompile(`[\r\n ]+`)
+// Delimiter is newline character or space
+var Delimiter = regexp.MustCompile(`[\r\n ]+`)
 
-// Set is a pseudo set
+// Set is a pseudo set object
 type Set map[string]struct{}
 
 // CLI is a command line object
@@ -33,6 +33,7 @@ func createSet(splited []string) Set {
 	for _, v := range splited {
 		word := strings.Trim(v, ",.")
 
+		// if word is like empty character
 		if len(word) == 0 {
 			continue
 		}
@@ -42,19 +43,19 @@ func createSet(splited []string) Set {
 }
 
 func outputTop3Word(outStream io.Writer, ranking Ranking) {
-	var outputCount = 1
+	var count = 1
 	for _, rank := range ranking {
-		if outputCount > OutPutCount {
+		if count > OutPutCount {
 			break
 		}
 		fmt.Fprintln(outStream, rank.name)
-		outputCount++
+		count++
 	}
 }
 
 func extractInputSentence(args []string) (string, error) {
 	argsNum := len(args)
-	if len(args) != 1 {
+	if argsNum != 1 {
 		return "", fmt.Errorf("arguments must be single sentence. Your specified %d arguments", argsNum)
 	}
 	input := args[0]
@@ -68,7 +69,7 @@ func (cli *CLI) Run(args []string) int {
 		fmt.Fprintf(cli.errStream, "error occured: %s\n", err)
 		return ExitCodeError
 	}
-	splited := delimiter.Split(inputSentence, -1)
+	splited := Delimiter.Split(inputSentence, -1)
 
 	set := createSet(splited)
 
